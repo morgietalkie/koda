@@ -90,7 +90,7 @@ export default function RegistrationFlow() {
   };
 
   const handlePrevious = () => {
-    dispatch({ type: "CLEAR_ERRORS" });
+    dispatch({ type: "CLEAR_FIELD_ERRORS" });
     dispatch({ type: "SET_STEP", step: Math.max(1, step - 1) });
   };
 

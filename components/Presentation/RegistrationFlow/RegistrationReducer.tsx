@@ -11,7 +11,7 @@ export type RegistrationState = {
 type RegistrationAction =
   | { type: "UPDATE_FIELD"; field: keyof RegistrationRequest; value: string }
   | { type: "SET_FIELD_ERRORS"; errors: Partial<Record<keyof RegistrationRequest, string>> }
-  | { type: "CLEAR_ERRORS" }
+  | { type: "CLEAR_FIELD_ERRORS" }
   | { type: "SET_STEP"; step: number }
   | { type: "SET_LOADING"; loading: boolean }
   | { type: "SET_ERROR"; message: string | null };
@@ -32,7 +32,7 @@ export function registrationReducer(state: RegistrationState, action: Registrati
     }
     case "SET_FIELD_ERRORS":
       return { ...state, errors: action.errors };
-    case "CLEAR_ERRORS":
+    case "CLEAR_FIELD_ERRORS":
       return { ...state, errors: {} };
     case "SET_STEP":
       return { ...state, step: action.step };
