@@ -3,14 +3,14 @@ import { RegistrationRequest } from "@/app/api/register-song/route";
 export type RegistrationState = {
   step: number;
   formData: RegistrationRequest;
-  errors: Partial<Record<keyof RegistrationRequest, string>>;
-  submissionError: string | null;
+  fieldErrors: Partial<Record<keyof RegistrationRequest, string>>;
+  isError: string | null;
   isLoading: boolean;
 };
 
 type RegistrationAction =
   | { type: "UPDATE_FIELD"; field: keyof RegistrationRequest; value: string }
-  | { type: "SET_FIELD_ERRORS"; errors: Partial<Record<keyof RegistrationRequest, string>> }
+  | { type: "SET_FIELD_ERRORS"; fieldErrors: Partial<Record<keyof RegistrationRequest, string>> }
   | { type: "CLEAR_FIELD_ERRORS" }
   | { type: "SET_STEP"; step: number }
   | { type: "SET_LOADING"; loading: boolean }
@@ -21,25 +21,25 @@ export function registrationReducer(state: RegistrationState, action: Registrati
     case "UPDATE_FIELD": {
       const updatedFormData = { ...state.formData, [action.field]: action.value };
 
-      if (!state.errors[action.field]) {
+      if (!state.fieldErrors[action.field]) {
         return { ...state, formData: updatedFormData };
       }
 
-      const pendingErrors = { ...state.errors };
-      delete pendingErrors[action.field];
+      const fieldErrors = { ...state.fieldErrors };
+      delete fieldErrors[action.field];
 
-      return { ...state, formData: updatedFormData, errors: pendingErrors };
+      return { ...state, formData: updatedFormData, fieldErrors };
     }
     case "SET_FIELD_ERRORS":
-      return { ...state, errors: action.errors };
+      return { ...state, fieldErrors: action.fieldErrors };
     case "CLEAR_FIELD_ERRORS":
-      return { ...state, errors: {} };
+      return { ...state, fieldErrors: {} };
     case "SET_STEP":
       return { ...state, step: action.step };
     case "SET_LOADING":
       return { ...state, isLoading: action.loading };
     case "SET_ERROR":
-      return { ...state, submissionError: action.message };
+      return { ...state, isError: action.message };
     default:
       return state;
   }

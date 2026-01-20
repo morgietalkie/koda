@@ -42,11 +42,11 @@ export default function RegistrationFlow() {
       artistName: "",
       originalLink: "",
     },
-    errors: {},
-    submissionError: null,
+    fieldErrors: {},
+    isError: null,
     isLoading: false,
   });
-  const { step, formData, errors, submissionError, isLoading } = state;
+  const { step, formData, fieldErrors, isError, isLoading } = state;
   const router = useRouter();
 
   const currentStep = steps[step - 1];
@@ -56,37 +56,37 @@ export default function RegistrationFlow() {
   };
 
   const validateStep = (currentStepId: number) => {
-    const pendingErrors: Partial<Record<keyof FormData, string>> = {};
+    const fieldErrors: Partial<Record<keyof FormData, string>> = {};
 
     if (currentStepId === 1) {
       if (!formData.contactName.trim()) {
-        pendingErrors.contactName = "Indtast dit fulde navn.";
+        fieldErrors.contactName = "Indtast dit fulde navn.";
       }
 
       if (!isValidEmail(formData.contactEmail)) {
-        pendingErrors.contactEmail = "Indtast en gyldig e-mailadresse.";
+        fieldErrors.contactEmail = "Indtast en gyldig e-mailadresse.";
       }
     }
 
     if (currentStepId === 2) {
       if (!isValidIsrc(formData.isrc)) {
-        pendingErrors.isrc = "ISRC skal indeholde præcis 12 cifre uden mellemrum.";
+        fieldErrors.isrc = "ISRC skal indeholde præcis 12 cifre uden mellemrum.";
       }
 
       if (!formData.artistName.trim()) {
-        pendingErrors.artistName = "Indtast dit artistnavn.";
+        fieldErrors.artistName = "Indtast dit artistnavn.";
       }
     }
 
     if (currentStepId === 3) {
       const originalLinkValue = formData.originalLink.trim();
       if (originalLinkValue && !isValidUrl(originalLinkValue)) {
-        pendingErrors.originalLink = "Linket skal starte med http:// eller https://.";
+        fieldErrors.originalLink = "Linket skal starte med http:// eller https://.";
       }
     }
 
-    dispatch({ type: "SET_FIELD_ERRORS", errors: pendingErrors });
-    return Object.keys(pendingErrors).length === 0;
+    dispatch({ type: "SET_FIELD_ERRORS", fieldErrors });
+    return Object.keys(fieldErrors).length === 0;
   };
 
   const handlePrevious = () => {
@@ -156,7 +156,7 @@ export default function RegistrationFlow() {
     if (step === 1) {
       return (
         <div className="space-y-5">
-          <InputField required label="Navn" placeholder="Fornavn Efternavn" value={formData.contactName} error={errors.contactName} onChange={(value) => updateField("contactName", value)} />
+          <InputField required label="Navn" placeholder="Fornavn Efternavn" value={formData.contactName} error={fieldErrors.contactName} onChange={(value) => updateField("contactName", value)} />
 
           <InputField
             required
@@ -164,7 +164,7 @@ export default function RegistrationFlow() {
             type="email"
             placeholder="mail@mail.dk"
             value={formData.contactEmail}
-            error={errors.contactEmail}
+            error={fieldErrors.contactEmail}
             onChange={(value) => updateField("contactEmail", value)}
           />
         </div>
@@ -175,11 +175,11 @@ export default function RegistrationFlow() {
       return (
         <div className="space-y-6">
           <div className="space-y-2">
-            <InputField required label="ISRC" placeholder="ex. 123456789000" value={formData.isrc} error={errors.isrc} onChange={(value) => updateField("isrc", value)} />
+            <InputField required label="ISRC" placeholder="ex. 123456789000" value={formData.isrc} error={fieldErrors.isrc} onChange={(value) => updateField("isrc", value)} />
             <p className="text-sm text-gray-500">ISRC står for International Standard Recording Code. Det er en 12-cifret kode, der identificerer hvert enkelt track på en udgivelse.</p>
           </div>
 
-          <InputField required label="Dit artistnavn" placeholder="ex. The Beatles" value={formData.artistName} error={errors.artistName} onChange={(value) => updateField("artistName", value)} />
+          <InputField required label="Dit artistnavn" placeholder="ex. The Beatles" value={formData.artistName} error={fieldErrors.artistName} onChange={(value) => updateField("artistName", value)} />
         </div>
       );
     }
@@ -195,7 +195,7 @@ export default function RegistrationFlow() {
                 label="Indsæt et link til originalværket (valgfrit)"
                 placeholder="ex. https://www.youtube.com/watch?v=NrgmdOz227I"
                 value={formData.originalLink}
-                error={errors.originalLink}
+                error={fieldErrors.originalLink}
                 onChange={(value) => updateField("originalLink", value)}
               />
               <p className="text-sm text-gray-500">Hjælp os med at sikre, at du har valgt det rigtige originalværk ved at indsætte et link fra Youtube, Spotify eller en anden tjeneste.</p>
@@ -219,7 +219,7 @@ export default function RegistrationFlow() {
 
           <div className="mt-8">{renderStepContent()}</div>
 
-          {submissionError && <p className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{submissionError}</p>}
+          {isError && <p className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{isError}</p>}
 
           <div className="mt-10 flex  gap-4 flex-row justify-between">
             <Button onClick={handlePrevious} disabled={step === 1 || isLoading} variant="text">
