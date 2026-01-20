@@ -1,32 +1,39 @@
 import { NextResponse } from "next/server";
-import { isValidUID } from "@/utils/isValidUID";
+import { z } from "zod";
 
-export type ReceiptResponse = {
-  contactName: string;
-  contactEmail: string;
-  isrc: string;
-  artistName: string;
-  originalLink: string;
-  reference: string;
-  receivedAt: string;
-  receiptId: string;
+const receiptParamsSchema = z.object({
+  receiptId: z.uuid()
+});
+
+const receiptSchema = z.object({
+  receiptId: z.string(),
+  contactName: z.string(),
+  contactEmail: z.email(),
+  isrc: z.string(),
+  artistName: z.string(),
+  originalLink: z.url(),
+  reference: z.string(),
+  receivedAt: z.string(),
+});
+
+export type ReceiptResponse = z.infer<typeof receiptSchema>;
+
+type ReceiptResponseBody = ReceiptResponse | {
+  error: string;
 };
 
+export async function GET(
+  _: Request,
+  context: { params: Promise<{ receiptId?: string }> }
+): Promise<NextResponse<ReceiptResponseBody>> {
+  const rawParams = await context.params;
+  const parsedParams = receiptParamsSchema.safeParse(rawParams);
 
-
-export async function GET(_: Request, context: { params: Promise<{ receiptId?: string }> }): Promise<NextResponse<ReceiptResponse> | NextResponse<{ error: string }>> {
-  const { receiptId } = await context.params;
+  if (!parsedParams.success) {
+    return NextResponse.json({ error: "Invalid receiptId" }, { status: 400 });
+  }
 
   await new Promise((resolve) => setTimeout(resolve, 1200));
-
-
-  if (!receiptId) {
-    return NextResponse.json({ error: "Receipt ID mangler i forespørgslen." }, { status: 400 });
-  }
-
-  if (!isValidUID(receiptId)) {
-    return NextResponse.json({ error: "Receipt ID er ugyldigt." }, { status: 400 });
-  }
 
   const receipt = {
     receiptId: "00000000-0000-4000-8000-000000000000",
@@ -37,12 +44,16 @@ export async function GET(_: Request, context: { params: Promise<{ receiptId?: s
     originalLink: "https://example.com/original-work/123456",
     reference: "NMP-123456",
     receivedAt: new Date().toISOString(),
-  }
-
+  };
 
   if (!receipt) {
     return NextResponse.json({ error: "Ingen registrering fundet for det angivne Receipt ID." }, { status: 404 });
   }
 
-  return NextResponse.json(receipt);
+  const validatedReceipt = receiptSchema.safeParse(receipt);
+  if (!validatedReceipt.success) {
+    return NextResponse.json({ error: "Response payload validation failed" }, { status: 500 });
+  }
+
+  return NextResponse.json(validatedReceipt.data);
 }
