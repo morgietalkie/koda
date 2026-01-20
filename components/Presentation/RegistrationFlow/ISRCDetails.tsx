@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/UI/Button";
 import { OriginalWork } from "@/app/api/fetch-song/[isrc]/route";
 
-export type ISRCDetailsStatus = "idle" | "loading" | "ready" | "error";
+export type ISRCDetailsStatus = "loading" | "ready" | "error";
 
 type ISRCDetailsProps = {
   isrc: string;
