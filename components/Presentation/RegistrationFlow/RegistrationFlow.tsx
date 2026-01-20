@@ -79,7 +79,7 @@ export default function RegistrationFlow() {
     }
 
     if (currentStepId === 3) {
-      const originalLinkValue = formData.originalLink.trim();
+      const originalLinkValue = formData.originalLink?.trim();
       if (originalLinkValue && !isValidUrl(originalLinkValue)) {
         fieldErrors.originalLink = "Linket skal starte med http:// eller https://.";
       }
@@ -91,6 +91,7 @@ export default function RegistrationFlow() {
 
   const handlePrevious = () => {
     dispatch({ type: "CLEAR_FIELD_ERRORS" });
+    dispatch({ type: "SET_ERROR", message: null });
     dispatch({ type: "SET_STEP", step: Math.max(1, step - 1) });
   };
 
@@ -193,7 +194,7 @@ export default function RegistrationFlow() {
             <InputField
               label="Indsæt et link til originalværket (valgfrit)"
               placeholder="ex. https://www.youtube.com/watch?v=NrgmdOz227I"
-              value={formData.originalLink}
+              value={formData.originalLink ?? ""}
               error={fieldErrors.originalLink}
               onChange={(value) => updateField("originalLink", value)}
             />

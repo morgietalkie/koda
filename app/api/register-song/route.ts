@@ -9,7 +9,7 @@ const registrationRequestSchema = z.object({
     .string()
     .refine((value) => isValidIsrc(value), { message: "Invalid ISRC format" }),
   artistName: z.string(),
-  originalLink: z.url(),
+  originalLink: z.string().optional(),
 });
 
 const submissionResponseSchema = z.object({
@@ -30,8 +30,8 @@ export async function POST(request: Request): Promise<NextResponse<SubmissionRes
   const parsedPayload = registrationRequestSchema.safeParse(payload);
 
   if (!parsedPayload.success) {
-    const message = parsedPayload.error.issues[0]?.message ?? "Invalid request payload";
-    return NextResponse.json({ error: message }, { status: 400 });
+    console.log(parsedPayload)
+    return NextResponse.json({ error: "Invalid request payload" }, { status: 400 });
   }
 
   await new Promise((resolve) => setTimeout(resolve, 1200));
