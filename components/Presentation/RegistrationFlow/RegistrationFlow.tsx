@@ -189,18 +189,16 @@ export default function RegistrationFlow() {
         <div className="space-y-6">
           <ISRCDetails isrc={formData.isrc} onStatusChange={handleStatusChange} onSelectAnother={handlePrevious} />
 
-          {isLoading !== true && (
-            <div className="space-y-2">
-              <InputField
-                label="Indsæt et link til originalværket (valgfrit)"
-                placeholder="ex. https://www.youtube.com/watch?v=NrgmdOz227I"
-                value={formData.originalLink}
-                error={fieldErrors.originalLink}
-                onChange={(value) => updateField("originalLink", value)}
-              />
-              <p className="text-sm text-gray-500">Hjælp os med at sikre, at du har valgt det rigtige originalværk ved at indsætte et link fra Youtube, Spotify eller en anden tjeneste.</p>
-            </div>
-          )}
+          <div className="space-y-2">
+            <InputField
+              label="Indsæt et link til originalværket (valgfrit)"
+              placeholder="ex. https://www.youtube.com/watch?v=NrgmdOz227I"
+              value={formData.originalLink}
+              error={fieldErrors.originalLink}
+              onChange={(value) => updateField("originalLink", value)}
+            />
+            <p className="text-sm text-gray-500">Hjælp os med at sikre, at du har valgt det rigtige originalværk ved at indsætte et link fra Youtube, Spotify eller en anden tjeneste.</p>
+          </div>
         </div>
       );
     }
