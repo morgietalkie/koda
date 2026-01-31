@@ -14,6 +14,8 @@ export default function Receipt({ receiptId }: { receiptId: string }) {
     const loadReceipt = async () => {
       setState({ status: "loading" });
 
+
+      console.log("first");
       try {
         const response = await fetch(`/api/receipt/${encodeURIComponent(receiptId)}`, {
           signal: controller.signal,
